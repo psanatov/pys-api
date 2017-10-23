@@ -43,3 +43,9 @@ bower.json
 # Ignore Byebug command history file.
 .byebug_history
 
+# ignore vim specific files
+*.swp
+*.swo
+
+# ignore temp files
+*~
