@@ -2,14 +2,19 @@
 require 'rails_helper'
 
 RSpec.describe 'Entries API', type: :request do
+  # add owner
+  let(:user) { create(:user) }
   # initialize test data 
-  let!(:entries) { create_list(:entry, 10) }
+  let!(:entries) { create_list(:entry, 10, created_by: user.id) }
   let(:entry_id) { entries.first.id }
+  # authorize request
+  let(:headers) { valid_headers }
+
 
   # Test suite for GET /entries
   describe 'GET /entries' do
     # make HTTP get request before each example
-    before { get '/entries' }
+    before { get '/entries', params: {}, headers: headers }
 
     it 'returns entries' do
       # Note `json` is a custom helper to parse JSON responses
@@ -24,7 +29,7 @@ RSpec.describe 'Entries API', type: :request do
 
   # Test suite for GET /entries/:id
   describe 'GET /entries/:id' do
-    before { get "/entries/#{entry_id}" }
+    before { get "/entries/#{entry_id}", params: {}, headers: headers }
 
     context 'when the record exists' do
       it 'returns the entry' do
@@ -53,10 +58,12 @@ RSpec.describe 'Entries API', type: :request do
   # Test suite for POST /entries
   describe 'POST /entries' do
     # valid payload
-    let(:valid_attributes) { { title: 'Learn Elm', created_by: '1' } }
+    let(:valid_attributes) do
+      { title: 'Learn Elm', created_by: user.id.to_s }.to_json
+    end
 
     context 'when the request is valid' do
-      before { post '/entries', params: valid_attributes }
+      before { post '/entries', params: valid_attributes, headers: headers }
 
       it 'creates a entry' do
         expect(json['title']).to eq('Learn Elm')
@@ -68,7 +75,8 @@ RSpec.describe 'Entries API', type: :request do
     end
 
     context 'when the request is invalid' do
-      before { post '/entries', params: { title: 'Foobar' } }
+      let(:valid_attributes) { { title: nil }.to_json }
+      before { post '/entries', params: valid_attributes, headers: headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -76,17 +84,17 @@ RSpec.describe 'Entries API', type: :request do
 
       it 'returns a validation failure message' do
         expect(response.body)
-          .to match(/Validation failed: Created by can't be blank/)
+          .to match(/Validation failed: Title can't be blank/)
       end
     end
   end
 
   # Test suite for PUT /entries/:id
   describe 'PUT /entries/:id' do
-    let(:valid_attributes) { { title: 'Shopping' } }
+    let(:valid_attributes) { { title: 'Shopping' }.to_json }
 
     context 'when the record exists' do
-      before { put "/entries/#{entry_id}", params: valid_attributes }
+      before { put "/entries/#{entry_id}", params: valid_attributes, headers: headers }
 
       it 'updates the record' do
         expect(response.body).to be_empty
@@ -100,7 +108,7 @@ RSpec.describe 'Entries API', type: :request do
 
   # Test suite for DELETE /entries/:id
   describe 'DELETE /entries/:id' do
-    before { delete "/entries/#{entry_id}" }
+    before { delete "/entries/#{entry_id}", params: {}, headers: headers }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)

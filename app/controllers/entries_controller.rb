@@ -4,13 +4,13 @@ class EntriesController < ApplicationController
 
   # GET /entries
   def index
-    @entries = Entry.all
+    @entries = current_user.entries
     json_response(@entries)
   end
 
   # POST /entries
   def create
-    @entry = Entry.create!(entry_params)
+    @entry = current_user.entries.create!(entry_params)
     json_response(@entry, :created)
   end
 
@@ -35,7 +35,7 @@ class EntriesController < ApplicationController
 
   def entry_params
     # whitelist params
-    params.permit(:title, :created_by)
+    params.permit(:title)
   end
 
   def set_entry
