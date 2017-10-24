@@ -1,24 +1,12 @@
-# README
+# PostYour.Space API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+How to run app on local machine:
 
-Things you may want to cover:
+ * Run `bundle install`
+ * Create database: `rails db:create` 
+ * Run migrations `rails db:migrate`
+ * Run server `rails s`
+ * You're all set :+1:
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+App uses [gem 'pg'](https://rubygems.org/gems/pg/versions/0.18.4) as a database interface 
+For unit testing app uses [gem 'rspec'](https://rubygems.org/gems/rspec) 
