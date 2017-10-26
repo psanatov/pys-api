@@ -1,6 +1,11 @@
+# config/routes
 Rails.application.routes.draw do
-  resources :entries do
-    resources :items
+
+  # namespace the controllers without affecting the URI
+  scope module: :v1, constraints: ApiVersion.new('v1', true) do
+    resources :entries do
+      resources :items
+    end
   end
 
   post 'auth/login', to: 'authentication#authenticate'
